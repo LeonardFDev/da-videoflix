@@ -1,0 +1,136 @@
+# =====================================================
+# Python / Django
+# =====================================================
+
+# Bytecode / Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyc
+
+# Native Extensions (compiled modules)
+*.pyd
+
+# Packaging artifacts
+*.egg-info/
+.eggs/
+
+# Virtuelle Umgebungen
+venv/
+.venv/
+env/
+ENV/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+staticfiles/
+media/
+
+# Umgebungsvariablen & Secrets
+.env
+.env.*
+!.env.template
+
+*.secret
+*.token
+
+# Logs
+*.log
+
+# Tests & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python Tools
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Coverage
+coverage/
+
+
+# =====================================================
+# Docker
+# =====================================================
+
+.docker/
+docker-compose.override.yml
+
+# =====================================================
+# VS Code
+# =====================================================
+
+.vscode/
+
+# =====================================================
+# JetBrains (IntelliJ, WebStorm, PyCharm)
+# =====================================================
+
+.idea/
+
+# =====================================================
+# Betriebssystem
+# =====================================================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =====================================================
+# Git
+# =====================================================
+
+*.orig
+
+# =====================================================
+# Temporäre Dateien
+# =====================================================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# =====================================================
+# Archive
+# =====================================================
+
+*.zip
+*.tar
+*.gz
+*.7z
+
+# =====================================================
+# Data / Cache / Serialized Files
+# =====================================================
+
+*.pkl
+
+# =====================================================
+# Migrations
+# =====================================================
+
+*/migrations/*
+**/migrations/*.pyc
+**/migrations/__pycache__/
+!*/migrations/__init__.py
+
+# =====================================================
+# Personal custom files (user-created, local only)
+# =====================================================
+
+scratchpad.txt
+tools/ffmpeg.exe
+tools/ffmpeg
