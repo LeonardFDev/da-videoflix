@@ -40,4 +40,22 @@ EOF
 
 python manage.py rqworker default &
 
-exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
+if [ "${DEBUGPY_ENABLED:-0}" = "1" ]; then
+    echo "Launch Gunicorn with VS Code Debugger"
+
+    exec python -m debugpy \
+        --listen 0.0.0.0:7000 \
+        --wait-for-client \
+        -m gunicorn core.wsgi:application \
+        --bind 0.0.0.0:8000 \
+        --workers 1 \
+        --timeout 300
+else
+    echo "Start Gunicorn in normal development mode"
+
+    exec gunicorn core.wsgi:application \
+        --bind 0.0.0.0:8000 \
+        --reload
+fi
+
+# exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
