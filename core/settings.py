@@ -164,8 +164,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    "smtp": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.environ.get("EMAIL_HOST", default="smtp.example.com"),
+            "port": os.environ.get("EMAIL_PORT", default=587),
+            "use_tls": os.environ.get("EMAIL_USE_TLS", default=True).lower() == "true",
+            "use_ssl": os.environ.get("EMAIL_USE_SSL", default=False).lower() == "true",
+            "username": os.environ.get("EMAIL_HOST_USER"),
+            "password": os.environ.get("EMAIL_HOST_PASSWORD"),
+        },
+        "FROM_EMAIL": os.environ.get("DEFAULT_FROM_EMAIL", default="Videoflix <info@Videoflix.com>"),
+    },
+
+    "default": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        "FROM_EMAIL": os.environ.get("DEFAULT_FROM_EMAIL", default="Videoflix <info@Videoflix.com>"),
     },
 }
 
@@ -184,6 +198,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(hours=12),
 }
+
+PASSWORD_RESET_TIMEOUT = 60 * 30
 
 
 TEST_RUNNER = "core.test_runner.ContentTestProtocolDeletedRunner"
