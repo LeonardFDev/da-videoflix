@@ -200,7 +200,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(hours=12),
 }
 
-PASSWORD_RESET_TIMEOUT = 60 * 30
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
 
 
 TEST_RUNNER = "core.test_runner.ContentTestProtocolDeletedRunner"
