@@ -50,6 +50,15 @@ if [ "${DEBUGPY_ENABLED:-0}" = "1" ]; then
         --bind 0.0.0.0:8000 \
         --workers 1 \
         --timeout 300
+
+elif [ "${DEBUGPY_ENABLED:-0}" = "2" ]; then
+    echo "test with VS Code Debugger"
+
+    exec python -m debugpy \
+    --listen 0.0.0.0:7000 \
+    --wait-for-client \
+    manage.py test "${WHICH_TEST}"
+
 else
     echo "Start Gunicorn in normal development mode"
 
