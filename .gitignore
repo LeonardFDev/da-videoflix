@@ -80,7 +80,7 @@ docker-compose.override.yml
 .idea/
 
 # =====================================================
-# Betriebssystem
+# Operating System
 # =====================================================
 
 .DS_Store
@@ -94,7 +94,7 @@ desktop.ini
 *.orig
 
 # =====================================================
-# Temporäre Dateien
+# Temporary files
 # =====================================================
 
 *.tmp
@@ -134,3 +134,4 @@ desktop.ini
 scratchpad.txt
 tools/ffmpeg.exe
 tools/ffmpeg
+*.bat
