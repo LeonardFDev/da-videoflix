@@ -38,7 +38,7 @@ else:
     print(f"Superuser '{username}' already exists.")
 EOF
 
-python manage.py rqworker default &
+python manage.py rqworker default --with-scheduler &
 
 if [ "${DEBUGPY_ENABLED:-0}" = "1" ]; then
     echo "Launch Gunicorn with VS Code Debugger"
