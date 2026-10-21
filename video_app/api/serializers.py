@@ -26,7 +26,7 @@ class VideoDetailtSerializer(serializers.Serializer):
         except Exception:
             raise serializers.ValidationError()
 
-        video_id_dir = Path(video.video_file.path).parent / str(video.id)
+        video_id_dir = Path(video.video_file.path).parent
         if not video_id_dir.is_dir():
             raise serializers.ValidationError()
 

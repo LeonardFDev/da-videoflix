@@ -16,7 +16,7 @@ def video_post_save(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Video)
 def video_post_delete(sender, instance, **kwargs):
     if instance.video_file:
-        path = Path(instance.video_file.path).parent / str(instance.id)
+        path = Path(instance.video_file.path).parent
 
         if path.is_dir():
             shutil.rmtree(path)
