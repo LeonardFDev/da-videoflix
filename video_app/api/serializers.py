@@ -22,7 +22,7 @@ class VideoDetailtSerializer(serializers.Serializer):
         segment = attrs["segment"]
 
         try:
-            video = Video.objects.get(id=movie_id)
+            video = Video.objects.get(id=movie_id, is_ready=True)
         except Exception:
             raise serializers.ValidationError()
 
@@ -42,3 +42,33 @@ class VideoDetailtSerializer(serializers.Serializer):
             raise serializers.ValidationError()
         
         return video_segment
+
+
+class ThumbnailImageSerializer(serializers.Serializer):
+    movie_id = serializers.IntegerField()
+    thumbnail = serializers.CharField()
+
+    def validate(self, attrs):
+        movie_id = attrs["movie_id"]
+        thumbnail = attrs["thumbnail"]
+
+        try:
+            video = Video.objects.get(id=movie_id, is_ready=True)
+        except Exception:
+            raise serializers.ValidationError()
+
+        if not video.is_ready:
+            raise serializers.ValidationError()
+
+        video_id_dir = Path(video.video_file.path).parent
+        if not video_id_dir.is_dir():
+            raise serializers.ValidationError()
+
+        video_thumbnail = Path(video_id_dir) / thumbnail
+        if not video_thumbnail.exists():
+            raise serializers.ValidationError()
+
+        if not str(video_thumbnail).endswith((".jpg", ".jpeg", ".png", ".webp")):
+            raise serializers.ValidationError()
+        
+        return video_thumbnail
