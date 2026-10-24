@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from video_app.api.views import ThumbnailImageView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include("auth_app.api.urls")),
-    path('api/', include("video_app.api.urls"))
+    path('api/', include("video_app.api.urls")),
+    
+    path('media/video/<int:movie_id>/<str:thumbnail>/', ThumbnailImageView.as_view(), name='thumbnail_image')
 ]
