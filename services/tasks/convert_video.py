@@ -1,4 +1,5 @@
 import subprocess
+import random
 
 from pathlib import Path
 from video_app.models import Video
@@ -12,6 +13,9 @@ def convert_and_create_hls(input_video, video_id):
     resolutions = get_reresolutions()
 
     resolution_conversion_loop(resolutions, base_dir, move_video_file)
+    create_thumbnail(move_video_file, video_id)
+
+    Video.objects.filter(id=video_id, is_ready=False).update(is_ready=True)
 
 
 def move_video_file_to_id_folder(input_video, video_id):
@@ -68,3 +72,42 @@ def get_command(move_video_file, height, segment_pattern, playlist):
         "-f", "hls",
         playlist,
     ]
+
+
+def create_thumbnail(move_video_file, video_id):
+    result = find_video_runtime(move_video_file)
+    duration = float(result.stdout.strip())
+    random_timestamp = random.uniform(duration * 0.2, duration * 0.8)
+
+    thumbnail_path = Path(move_video_file).parent / "thumbnail.jpg"
+    create_video_thumbnail(move_video_file, random_timestamp, thumbnail_path)
+
+    Video.objects.filter(id=video_id).update(thumbnail_url=f"video/{video_id}/thumbnail.jpg")
+
+def find_video_runtime(move_video_file):
+    return subprocess.run(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            move_video_file,
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+def create_video_thumbnail(move_video_file, random_timestamp, thumbnail_path):
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i", move_video_file,
+            "-ss", str(random_timestamp),
+            "-frames:v", "1",
+            "-vf", "scale=640:-1",
+            str(thumbnail_path),
+        ],
+        check=True,
+    )
