@@ -1,9 +1,5 @@
-import os
-import uuid
-
 from django.db import models
 from datetime import date
-from django.core.files.storage import default_storage
 from django.core.validators import FileExtensionValidator
 
 class Video(models.Model):
@@ -15,6 +11,7 @@ class Video(models.Model):
     video_file = models.FileField(upload_to="video", validators=[FileExtensionValidator(allowed_extensions=["mp4", "webm", "mov"])])
     category = models.CharField(max_length=100, default="Private")
     created_at = models.DateTimeField(default=date.today)
+    is_ready = models.BooleanField(default=False)
 
 
     def __str__(self):
