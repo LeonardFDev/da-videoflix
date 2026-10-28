@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 from pathlib import Path
 
 from video_app.models import Video
@@ -24,19 +25,19 @@ class VideoDetailtSerializer(serializers.Serializer):
         try:
             video = Video.objects.get(id=movie_id, is_ready=True)
         except Exception:
-            raise serializers.ValidationError()
+            raise NotFound()
 
         video_id_dir = Path(video.video_file.path).parent
         if not video_id_dir.is_dir():
-            raise serializers.ValidationError()
+            raise NotFound()
 
         video_resolution_dir = Path(video_id_dir) / resolution
         if not video_resolution_dir.is_dir():
-            raise serializers.ValidationError()
+            raise NotFound()
 
         video_segment = Path(video_resolution_dir) / segment
         if not video_segment.exists():
-            raise serializers.ValidationError()
+            raise NotFound()
 
         if not str(video_segment).endswith((".m3u8", ".ts")):
             raise serializers.ValidationError()
@@ -55,18 +56,15 @@ class ThumbnailImageSerializer(serializers.Serializer):
         try:
             video = Video.objects.get(id=movie_id, is_ready=True)
         except Exception:
-            raise serializers.ValidationError()
-
-        if not video.is_ready:
-            raise serializers.ValidationError()
+            raise NotFound()
 
         video_id_dir = Path(video.video_file.path).parent
         if not video_id_dir.is_dir():
-            raise serializers.ValidationError()
+            raise NotFound()
 
         video_thumbnail = Path(video_id_dir) / thumbnail
         if not video_thumbnail.exists():
-            raise serializers.ValidationError()
+            raise NotFound()
 
         if not str(video_thumbnail).endswith((".jpg", ".jpeg", ".png", ".webp")):
             raise serializers.ValidationError()
