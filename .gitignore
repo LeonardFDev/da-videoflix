@@ -135,3 +135,4 @@ scratchpad.txt
 tools/ffmpeg.exe
 tools/ffmpeg
 *.bat
+temp_*
