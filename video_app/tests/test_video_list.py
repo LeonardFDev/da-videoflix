@@ -16,8 +16,6 @@ from ..models import Video
 from tests.helpers import status_code_with_message
 
 
-total = 4
-
 class VideoListTests(APITestCase):
     def customized_setUp(self):
         self.user = User.objects.create_user(username="testuserTest", email="testuser@test.de", password="123456", is_active=True)
@@ -43,10 +41,10 @@ class VideoListTests(APITestCase):
     def delete_after_enqueue_job(self, create_video, unique_temp_dir_path):
         while True:
             time.sleep(1)
-            print(f"Data is processed for deletion (video-object: {create_video.id} of {total})")
+            print(f"Data is processed for deletion (video-object: {create_video.id})")
             path_of_thumbnail= Path(unique_temp_dir_path) / "video" /f"{create_video.id}" / "thumbnail.jpg"
             if path_of_thumbnail.exists():
-                print(f"Data is deleted (video-object: {create_video.id} of {total})")
+                print(f"Data is deleted (video-object: {create_video.id})")
                 shutil.rmtree(unique_temp_dir_path)
                 break
 

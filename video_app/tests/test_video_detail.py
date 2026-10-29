@@ -18,8 +18,6 @@ from ..models import Video
 from tests.helpers import status_code_with_message
 
 
-total = 4
-
 class VideoDetailTests(APITestCase):
     def customized_setUp(self):
         self.user = User.objects.create_user(username="testuserTest", email="testuser@test.de", password="123456", is_active=True)
@@ -45,10 +43,10 @@ class VideoDetailTests(APITestCase):
     def delete_after_enqueue_job(self, created_video_object, unique_temp_dir_path):
         while True:
             time.sleep(1)
-            print(f"Data is processed for deletion (video-object: {created_video_object.id} of {total})")
+            print(f"Data is processed for deletion (video-object: {created_video_object.id})")
             path_of_thumbnail= Path(unique_temp_dir_path) / "video" /f"{created_video_object.id}" / "thumbnail.jpg"
             if path_of_thumbnail.exists():
-                print(f"Data is deleted (video-object: {created_video_object.id} of {total})")
+                print(f"Data is deleted (video-object: {created_video_object.id})")
                 shutil.rmtree(unique_temp_dir_path)
                 break
 
@@ -139,7 +137,7 @@ class VideoDetailTests(APITestCase):
         while True:
             time.sleep(1)
             segment_path = Path(unique_temp_dir_path) / "video" / str(video_id) / resolution / segment
-            print(f"Data is processed for use (video-object: {created_video_object.id} of {total})")
+            print(f"Data is processed for use (video-object: {created_video_object.id})")
         
             is_exists_segment_path = self.exists_segment_path(created_video_object, unique_temp_dir_path, video_id, segment_path)
         
@@ -151,7 +149,7 @@ class VideoDetailTests(APITestCase):
             video_file = Path(created_video_object.video_file.path).name
             new_video_file = Path(unique_temp_dir_path) / "video" / str(video_id) / video_file
             Video.objects.filter(id=video_id).update(video_file=new_video_file)
-            print(f"Data is ready (video-object: {created_video_object.id} of {total})")
+            print(f"Data is ready (video-object: {created_video_object.id})")
             return True
         else:
             return False
