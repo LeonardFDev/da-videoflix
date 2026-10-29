@@ -1,20 +1,22 @@
 """Tests for the video list API."""
-import time
 import shutil
+import time
 import uuid
 
+from django.contrib.auth.models import User
+from django.core.files import File
+from django.test import override_settings
+from django.urls import reverse
 from pathlib import Path
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.test import override_settings
-from django.urls import reverse
-from django.contrib.auth.models import User
-from django.core.files import File
 
-from tests.helpers import status_code_with_message
 from ..models import Video
+from tests.helpers import status_code_with_message
 
+
+total = 4
 
 class VideoListTests(APITestCase):
     def customized_setUp(self):
@@ -41,13 +43,12 @@ class VideoListTests(APITestCase):
     def delete_after_enqueue_job(self, create_video, unique_temp_dir_path):
         while True:
             time.sleep(1)
-            print(f"Data is processed (video id: {create_video.id} of 3)")
+            print(f"Data is processed for deletion (video-object: {create_video.id} of {total})")
             path_of_thumbnail= Path(unique_temp_dir_path) / "video" /f"{create_video.id}" / "thumbnail.jpg"
             if path_of_thumbnail.exists():
-                print(f"Data is ready (video id: {create_video.id} of 3)")
+                print(f"Data is deleted (video-object: {create_video.id} of {total})")
                 shutil.rmtree(unique_temp_dir_path)
                 break
-
 
     def test_video_list_post_405(self):
         self.customized_setUp()
