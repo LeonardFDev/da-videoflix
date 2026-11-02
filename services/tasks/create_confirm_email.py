@@ -1,3 +1,5 @@
+"""create confirm email task"""
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
@@ -5,6 +7,8 @@ from templates.emails.confirm_email import HTML_CONTENT
 
 
 def create_send_email(account, activation_link):
+    """Create and send the confirmation email."""
+
     name = create_name_from_email(account.username) or "Videoflix user"
 
     msg = EmailMultiAlternatives(
@@ -21,6 +25,8 @@ def create_send_email(account, activation_link):
 
 
 def create_name_from_email(username):
+    """Create the name with the email"""
+
     username = username.split("@")[0]
 
     for char in [".", "!", "#", "$", "%", "&", "'", "*", "+", "-", "/", "=", "?", "^", "_", "`", "{", "|", "}", "~", ","]:
@@ -31,6 +37,8 @@ def create_name_from_email(username):
 
 
 def create_text_content_email(name, activation_link):
+    """Creation of the text content of the email"""
+
     text_content = (
         f"Dear {name} \n"
         "Thank you for registering with Videoflix. To complete your registration and verify your email address, please click the link below:\n\n"
@@ -49,6 +57,8 @@ def create_text_content_email(name, activation_link):
 
 
 def create_html_content_email(name, activation_link):
+    """Creation of the html content of the email"""
+
     html_content = HTML_CONTENT.format(name=name, activation_link=activation_link)
     
     return html_content

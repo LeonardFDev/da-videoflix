@@ -1,3 +1,5 @@
+"""create password reset email task"""
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
@@ -5,6 +7,8 @@ from templates.emails.password_reset_email import HTML_CONTENT
 
 
 def password_reset_send_email(account, password_reset_link):
+    """Create and send the reset password email."""
+
     msg = EmailMultiAlternatives(
         subject="Reset your Password",
         body=create_text_content_email(password_reset_link),
@@ -19,6 +23,8 @@ def password_reset_send_email(account, password_reset_link):
 
 
 def create_text_content_email(password_reset_link):
+    """Creation of the text content of the email"""
+
     text_content = (
         "Hello,\n\n"
 
@@ -40,6 +46,8 @@ def create_text_content_email(password_reset_link):
 
 
 def create_html_content_email(password_reset_link):
+    """Creation of the html content of the email"""
+
     html_content = HTML_CONTENT.format(password_reset_link=password_reset_link)
     
     return html_content
