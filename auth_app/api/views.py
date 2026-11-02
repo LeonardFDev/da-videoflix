@@ -1,4 +1,4 @@
-"""register, login, logout and token refresh API views."""
+"""registration, activate account, login, logout, reset password and confirm new password API views."""
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -58,9 +58,12 @@ class RegistrationView(APIView):
 
 
 class ActivateView(APIView):
+    """Provides an API endpoint to activate the user account."""
+
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
+        """Activate the user"""
         serializer = ActivateSerializer(data={"uidb64": uidb64,"token": token})
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -71,7 +74,7 @@ class ActivateView(APIView):
 
 
 class LoginView(TokenObtainPairView):
-    """Provides an API endpoint for user authentication."""
+    """Provides an API endpoint for user login."""
 
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
@@ -116,7 +119,7 @@ class CustomTokenRefreshView(TokenRefreshView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        """a new access token is created with the refresh token"""
+        """A new access token is created with the refresh token"""
         refresh_token = request.COOKIES.get("refresh_token")
 
         self.no_refresh_token_error(refresh_token)
@@ -129,7 +132,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             raise ValidationError("Refresh token not found!")
 
     def update_access_token(self, refresh_token):
-        """try to generate a new access token"""
+        """Try to generate a new access token"""
         serializer = self.get_serializer(data={"refresh": refresh_token})
 
         try:
@@ -188,12 +191,12 @@ class LogoutView(APIView):
 
 
 class PasswordResetView(APIView):
-    # """Provides an API endpoint for user registration."""
+    """Provides an API endpoint to reset the password."""
     
     permission_classes = [AllowAny]
     
     def post(self, request):
-        # """Register a new user."""
+        """Reset the password."""
         blacklist_old_refresh_token(request)
     
         serializer = PasswordResetSerializer(data=request.data)
@@ -208,9 +211,12 @@ class PasswordResetView(APIView):
 
 
 class PasswordConfirmView(APIView):
+    """Provides an API endpoint to confirm the new password."""
+
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
+        """Create a new password"""
         data = request.data
         data["uidb64"]= uidb64
         data["token"]= token

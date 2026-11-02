@@ -1,4 +1,4 @@
-# """Serializers for Authentication and registration operations."""
+"""Serializers for registration, activate account, login, logout, reset password and confirm new password"""
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator 
@@ -16,6 +16,7 @@ User = get_user_model()
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializer for the User registration."""
+
     confirmed_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -32,7 +33,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
     def validate_confirmed_password(self, value):
-        """checks that both passwords entered match"""
+        """Checks that both passwords entered match"""
         password = self.initial_data.get('password')
         if password and value and password != value:
             raise serializers.ValidationError('Passwords do not match')
@@ -71,10 +72,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class ActivateSerializer(serializers.Serializer):
+    """Serializer for the activate user account."""
+
     uidb64 = serializers.CharField()
     token = serializers.CharField()
 
     def validate(self, attrs):
+        """Checks if the id and token are valid"""
         uidb64 = attrs["uidb64"]
         token = attrs["token"]
 
@@ -94,6 +98,7 @@ class ActivateSerializer(serializers.Serializer):
         return attrs
 
     def save(self, **kwargs):
+        """Activates the user and saves it"""
         user = self.validated_data["user"]
         user.is_active = True
         user.save()
@@ -107,6 +112,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     password = serializers.CharField(write_only=True)
 
     def __init__(self, *args, **kwargs):
+        """Remove username field"""
         super().__init__(*args, **kwargs)
 
         if "username" in self.fields:
@@ -132,10 +138,12 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class PasswordResetSerializer(serializers.Serializer):
-    # """Serializer for the User registration."""
+    """Serializer to reset the user's password."""
+
     email = serializers.EmailField(required=True)
     
     def create(self, validated_data):
+        """Create an email to reset the password"""
         email = validated_data["email"]
     
         try:
@@ -157,19 +165,22 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordConfirmSerializer(serializers.Serializer):
+    """Serializer to confirm the user's new password."""
+
     uidb64 = serializers.CharField()
     token = serializers.CharField()
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
     def validate_confirm_password(self, value):
-        """checks that both passwords entered match"""
+        """Checks that both passwords entered match"""
         new_password = self.initial_data.get('new_password')
         if new_password and value and new_password != value:
             raise serializers.ValidationError('Passwords do not match')
         return value
     
     def validate(self, attrs):
+        """Checks if the id and token are valid"""
         uidb64 = attrs["uidb64"]
         token = attrs["token"]
     
@@ -185,6 +196,7 @@ class PasswordConfirmSerializer(serializers.Serializer):
         return attrs
     
     def save(self, **kwargs):
+        """Save new password"""
         new_password = self.validated_data["new_password"]
         uidb64 = self.validated_data["uidb64"]
         id = force_str(urlsafe_base64_decode(uidb64))

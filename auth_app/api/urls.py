@@ -1,4 +1,4 @@
-# """URL configuration for the register, login, logout and token refresh API."""
+"""URL configuration for the registration, activate account, login, logout, reset password and confirm new password API."""
 
 from django.urls import path
 
