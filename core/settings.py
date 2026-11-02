@@ -168,7 +168,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
-    "smtp": {
+    "default": {
         "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
         "OPTIONS": {
             "host": os.environ.get("EMAIL_HOST", default="smtp.example.com"),
@@ -181,7 +181,7 @@ MAILERS = {
         "FROM_EMAIL": os.environ.get("DEFAULT_FROM_EMAIL", default="Videoflix <info@Videoflix.com>"),
     },
 
-    "default": {
+    "console": {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
         "FROM_EMAIL": os.environ.get("DEFAULT_FROM_EMAIL", default="Videoflix <info@Videoflix.com>"),
     },
