@@ -3,7 +3,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 
 
 class CookieJWTAuthentication(JWTAuthentication):
-    """uses the token through the cookie"""
+    """Uses the token through the cookie"""
 
     def authenticate(self, request):
         """Check if in cookie, the token exists and if it is still valid, otherwise you will see an error"""
