@@ -18,6 +18,7 @@ from tests.helpers import status_code_with_message
 
 class VideoListTests(APITestCase):
     def customized_setUp(self):
+        """self-defined setUp"""
         self.user = User.objects.create_user(username="testuserTest", email="testuser@test.de", password="123456", is_active=True)
         
         refresh = RefreshToken.for_user(self.user)
@@ -27,6 +28,7 @@ class VideoListTests(APITestCase):
         self.client.cookies["refresh_token"] = str(refresh)
 
     def create_test_file(self, is_ready = False):
+        """creates a video object and a temp_* folder that contains the .m3u8 and .ts files for testing"""
         temp_dir_path = Path.cwd() / "video_app" / "tests"
         unique_number = uuid.uuid4().hex[:6]
         unique_temp_dir_path = Path (temp_dir_path) / f"temp_{unique_number}"
@@ -39,6 +41,7 @@ class VideoListTests(APITestCase):
         self.delete_after_enqueue_job(create_video, unique_temp_dir_path)
 
     def delete_after_enqueue_job(self, create_video, unique_temp_dir_path):
+        """after the enqueue job is finished, the temp_* order is deleted again"""
         while True:
             time.sleep(1)
             print(f"Data is processed for deletion (video-object: {create_video.id})")

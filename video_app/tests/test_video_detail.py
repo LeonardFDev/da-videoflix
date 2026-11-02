@@ -20,6 +20,7 @@ from tests.helpers import status_code_with_message
 
 class VideoDetailTests(APITestCase):
     def customized_setUp(self):
+        """self-defined setUp"""
         self.user = User.objects.create_user(username="testuserTest", email="testuser@test.de", password="123456", is_active=True)
         
         refresh = RefreshToken.for_user(self.user)
@@ -29,6 +30,7 @@ class VideoDetailTests(APITestCase):
         self.client.cookies["refresh_token"] = str(refresh)
 
     def create_test_file(self, is_ready = False):
+        """creates a video object and a temp_* folder that contains the .m3u8 and .ts files for testing"""
         temp_dir_path = Path.cwd() / "video_app" / "tests"
         unique_number = uuid.uuid4().hex[:6]
         unique_temp_dir_path = Path (temp_dir_path) / f"temp_{unique_number}"
@@ -41,6 +43,7 @@ class VideoDetailTests(APITestCase):
         return created_video_object, unique_temp_dir_path
 
     def delete_after_enqueue_job(self, created_video_object, unique_temp_dir_path):
+        """after the enqueue job is finished, the temp_* order is deleted again"""
         while True:
             time.sleep(1)
             print(f"Data is processed for deletion (video-object: {created_video_object.id})")
@@ -128,12 +131,14 @@ class VideoDetailTests(APITestCase):
             self.execute_test(created_video_object, unique_temp_dir_path, video_id, resolution, segment)
 
     def ensure_data_available(self, created_video_object, unique_temp_dir_path, video_id, resolution, segment):
+        """Make sure that data is available and that if CTRL + C is pressed, the temp_* folder will be deleted"""
         try:
             self.run_until_segment_file_exists(created_video_object, unique_temp_dir_path, video_id, resolution, segment)
         except KeyboardInterrupt:
             self.delete_after_enqueue_job(created_video_object, unique_temp_dir_path)
 
     def run_until_segment_file_exists(self, created_video_object, unique_temp_dir_path, video_id, resolution, segment):
+        """is run until either the .m3u8 file or the .ts file exists"""
         while True:
             time.sleep(1)
             segment_path = Path(unique_temp_dir_path) / "video" / str(video_id) / resolution / segment
@@ -145,6 +150,7 @@ class VideoDetailTests(APITestCase):
                 break
 
     def exists_segment_path(self, created_video_object, unique_temp_dir_path, video_id, segment_path):
+        """If the .m3u8 file or the .ts file exists, it returns True, otherwise it returns False."""
         if segment_path.exists():
             video_file = Path(created_video_object.video_file.path).name
             new_video_file = Path(unique_temp_dir_path) / "video" / str(video_id) / video_file
@@ -155,12 +161,12 @@ class VideoDetailTests(APITestCase):
             return False
 
     def execute_test(self, created_video_object, unique_temp_dir_path, video_id, resolution, segment):
-        # with override_settings(MEDIA_ROOT=unique_temp_dir_path):
-            url = reverse("video-detail", kwargs={"movie_id": str(video_id), "resolution": resolution, "segment": segment})
-            response = self.client.get(url)
+        """This is where the actual test (test_video_detail_get_200) is executed"""
+        url = reverse("video-detail", kwargs={"movie_id": str(video_id), "resolution": resolution, "segment": segment})
+        response = self.client.get(url)
         
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         
-            self.delete_after_enqueue_job(created_video_object, unique_temp_dir_path)
+        self.delete_after_enqueue_job(created_video_object, unique_temp_dir_path)
         
-            status_code_with_message(self, response)
+        status_code_with_message(self, response)
