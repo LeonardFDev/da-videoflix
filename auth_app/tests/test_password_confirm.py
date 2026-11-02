@@ -1,4 +1,4 @@
-"""Tests for the activate API."""
+"""Tests for the confirm Password API."""
 
 from django.urls import reverse
 from rest_framework import status
