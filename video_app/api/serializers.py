@@ -1,11 +1,13 @@
+"""Serializers for video list, video detail and thumbnail image"""
+
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from pathlib import Path
 
 from video_app.models import Video
 
-class VideoSerializer(serializers.ModelSerializer):
-    """Serializer for the video model."""
+class VideoListSerializer(serializers.ModelSerializer):
+    """Serializer for the video list."""
 
     class Meta:
         model = Video
@@ -13,11 +15,14 @@ class VideoSerializer(serializers.ModelSerializer):
 
 
 class VideoDetailtSerializer(serializers.Serializer):
+    """Serializer for the video detail."""
+
     movie_id = serializers.IntegerField()
     resolution = serializers.CharField()
     segment = serializers.CharField()
 
     def validate(self, attrs):
+        """Check that movie_id, resolution, and segment are found and valid"""
         movie_id = attrs["movie_id"]
         resolution = attrs["resolution"]
         segment = attrs["segment"]
@@ -46,10 +51,13 @@ class VideoDetailtSerializer(serializers.Serializer):
 
 
 class ThumbnailImageSerializer(serializers.Serializer):
+    """Serializer for the thumbnail image."""
+
     movie_id = serializers.IntegerField()
     thumbnail = serializers.CharField()
 
     def validate(self, attrs):
+        """Check that movie_id and Thumbnail found and valid"""
         movie_id = attrs["movie_id"]
         thumbnail = attrs["thumbnail"]
 
