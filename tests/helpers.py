@@ -1,7 +1,7 @@
 """This is where helper functions are located"""
 
 def status_code_with_message(self, response):
-    """creates a test_protocol.log file whose contents show whether a test worked or not, similar to 'Postman'"""
+    """Creates a test_protocol.log file whose contents show whether a test worked or not, similar to 'Postman'"""
     with open("test_protocol.log", "a", encoding="utf-8") as f:
         f.write("\n")
         f.write("-" * 160 + "\n")
@@ -14,7 +14,7 @@ def status_code_with_message(self, response):
         f.write("-" * 160 + "\n")
 
 def is_it_successful(self, response):
-    """checks whether the test could be processed, was a success or was a failure"""
+    """Checks whether the test could be processed, was a success or was a failure"""
     method_name_number = self._testMethodName.split("_")[-1]
     code = int(method_name_number) if method_name_number.isdecimal() else None
 
@@ -44,6 +44,7 @@ def customized_cookie_output(response):
     return output
 
 def data_output(response):
+    """Returns the data from Response"""
     data = getattr(response, "data", None)
     if data:
         data_string = str(data).replace("\"", "---")
@@ -52,5 +53,6 @@ def data_output(response):
         return f"Response Data: \"No content / non-existent\"\n"
 
 def content_type_output(response):
+    """Returns the content type from Response"""
     content_type = str(response).split('"')[1]
     return f"Content Type: \"{content_type}\"\n"
