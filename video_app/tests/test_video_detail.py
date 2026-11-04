@@ -116,15 +116,25 @@ class VideoDetailTests(APITestCase):
         status_code_with_message(self, response)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_video_detail_get_200(self):
+    def test_video_detail_m3u8_get_200(self):
         self.customized_setUp()
         created_video_object, unique_temp_dir_path = self.create_test_file(True)
 
         video_id = created_video_object.id
-        resolution_list = ["480p", "720p", "1080p"]
-        resolution = random.choice(resolution_list)
-        segment_list = ["segment_000.ts", "segment_001.ts", "index.m3u8"]
-        segment = random.choice(segment_list)
+        resolution = "480p"
+        segment = "index.m3u8"
+
+        with override_settings(MEDIA_ROOT=unique_temp_dir_path):
+            self.ensure_data_available(created_video_object, unique_temp_dir_path, video_id, resolution, segment)
+            self.execute_test(created_video_object, unique_temp_dir_path, video_id, resolution, segment)
+
+    def test_video_detail_ts_get_200(self):
+        self.customized_setUp()
+        created_video_object, unique_temp_dir_path = self.create_test_file(True)
+
+        video_id = created_video_object.id
+        resolution = "720p"
+        segment = "segment_000.ts"
 
         with override_settings(MEDIA_ROOT=unique_temp_dir_path):
             self.ensure_data_available(created_video_object, unique_temp_dir_path, video_id, resolution, segment)
