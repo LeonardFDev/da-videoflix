@@ -71,7 +71,8 @@ docker-compose.override.yml
 # VS Code
 # =====================================================
 
-.vscode/
+.vscode/*
+!.vscode/launch.json
 
 # =====================================================
 # JetBrains (IntelliJ, WebStorm, PyCharm)
@@ -132,7 +133,4 @@ desktop.ini
 # =====================================================
 
 scratchpad.txt
-tools/ffmpeg.exe
-tools/ffmpeg
-*.bat
 temp_*
