@@ -68,7 +68,9 @@ cp .env.template .env
 ```
 
 ### 5. Create and start the project with docker-compose
-Note: Docker desktop must be open
+Notes: 
+- Docker desktop must be open
+- Please make sure that the file is backend.entrypoint.sh saved with the End of Line Sequence LF.
 
 ```bash
 docker-compose up --build
