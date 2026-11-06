@@ -43,7 +43,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         """Ensures that an email exists only once"""
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError('Email already exists')
+            raise serializers.ValidationError('Please check your entries and try again.')
         return value
 
     def create(self, validated_data):
@@ -171,11 +171,11 @@ class PasswordResetSerializer(serializers.Serializer):
         """Create an email to reset the password"""
 
         account = self.return_user_or_email_not_exist_or_not_activated(validated_data)
-        uidb64 = urlsafe_base64_encode(force_bytes(account.id))
-        token = default_token_generator.make_token(account)
+        if account == "is_not_exist_or_not_activated":
+            print("is not exist or not activated")
+            return True
 
-        frontend_confirm_password_url = os.environ.get("FRONTEND_CONFIRM_PASSWORD_URL")
-        password_reset_link = f"{frontend_confirm_password_url}?uid={uidb64}&token={token}"
+        password_reset_link = self.create_password_reset_link(account)
         
         queue = get_queue("default", autocommit=True)
         queue.enqueue(password_reset_send_email, account, password_reset_link)
@@ -190,7 +190,16 @@ class PasswordResetSerializer(serializers.Serializer):
             account = User.objects.get(email=email, is_active=True)
             return account
         except Exception:
-            raise serializers.ValidationError({"detail": "This email does not exist or has not yet been activated"})
+            return "is_not_exist_or_not_activated"
+
+    def create_password_reset_link(self, account):
+        """Creates a password reset link"""
+        uidb64 = urlsafe_base64_encode(force_bytes(account.id))
+        token = default_token_generator.make_token(account)
+        
+        frontend_confirm_password_url = os.environ.get("FRONTEND_CONFIRM_PASSWORD_URL")
+        password_reset_link = f"{frontend_confirm_password_url}?uid={uidb64}&token={token}"
+        return password_reset_link
 
 
 class PasswordConfirmSerializer(serializers.Serializer):
