@@ -173,8 +173,8 @@ MAILERS = {
         "OPTIONS": {
             "host": os.environ.get("EMAIL_HOST", default="smtp.example.com"),
             "port": int(os.environ.get("EMAIL_PORT", default=587)),
-            "use_tls": os.environ.get("EMAIL_USE_TLS", default=True).lower() == "true",
-            "use_ssl": os.environ.get("EMAIL_USE_SSL", default=False).lower() == "true",
+            "use_tls": os.environ.get("EMAIL_USE_TLS", default="True").lower() == "true",
+            "use_ssl": os.environ.get("EMAIL_USE_SSL", default="False").lower() == "true",
             "username": os.environ.get("EMAIL_HOST_USER", default=""),
             "password": os.environ.get("EMAIL_HOST_PASSWORD", default=""),
         },
