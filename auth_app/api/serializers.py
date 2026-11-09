@@ -49,7 +49,25 @@ class IdAndTokenLinkValidate(serializers.Serializer):
             raise serializers.ValidationError({"detail": "Invalid or expired token."})
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class PasswordsMatchingValidateMixin():
+    """Mixin for Password Match Validation"""
+    password_field = "password"
+    confirmed_password_field = "confirmed_password"
+
+    def validate(self, attrs):
+        """Checks that both passwords entered match"""
+        attrs = super().validate(attrs)
+
+        password = attrs.get(self.password_field)
+        confirmed_password = attrs.get(self.confirmed_password_field)
+
+        if password and confirmed_password and password != confirmed_password:
+            raise serializers.ValidationError('Passwords do not match')
+
+        return attrs
+
+
+class RegistrationSerializer(PasswordsMatchingValidateMixin, serializers.ModelSerializer):
     """Serializer for the User registration."""
 
     confirmed_password = serializers.CharField(write_only=True)
@@ -65,13 +83,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 'required': True
             }
         }
-
-    def validate_confirmed_password(self, value):
-        """Checks that both passwords entered match"""
-        password = self.initial_data.get('password')
-        if password and value and password != value:
-            raise serializers.ValidationError('Passwords do not match')
-        return value
 
     def validate_email(self, value):
         """Ensures that an email exists only once"""
@@ -219,18 +230,12 @@ class PasswordResetSerializer(serializers.Serializer):
         return password_reset_link
 
 
-class PasswordConfirmSerializer(IdAndTokenLinkValidate):
+class PasswordConfirmSerializer(PasswordsMatchingValidateMixin, IdAndTokenLinkValidate):
     """Serializer to confirm the user's new password."""
-
+    password_field = "new_password"
+    confirmed_password_field = "confirm_password"
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
-
-    def validate_confirm_password(self, value):
-        """Checks that both passwords entered match"""
-        new_password = self.initial_data.get('new_password')
-        if new_password and value and new_password != value:
-            raise serializers.ValidationError('Passwords do not match')
-        return value
     
     def save(self, **kwargs):
         """Save new password"""
