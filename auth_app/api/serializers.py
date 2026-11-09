@@ -4,6 +4,7 @@ import os
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator 
+from django.db import transaction
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django_rq import get_queue
@@ -91,17 +92,18 @@ class RegistrationSerializer(PasswordsMatchingValidateMixin, serializers.ModelSe
         return value
 
     def create(self, validated_data):
-        """Initialization of Create User"""
-        created_account = self.create_account(validated_data)
-        uidb64 = urlsafe_base64_encode(force_bytes(created_account.id))
-        token = default_token_generator.make_token(created_account)
+        """Create User and prepare to send confirmation email"""
+        with transaction.atomic():
+            created_account = self.create_account(validated_data)
+            uidb64 = urlsafe_base64_encode(force_bytes(created_account.id))
+            token = default_token_generator.make_token(created_account)
 
-        frontend_activate_account_url = os.environ.get("FRONTEND_ACTIVATE_ACCOUNT_URL")
-        activation_link = f"{frontend_activate_account_url}?uid={uidb64}&token={token}"
+            frontend_activate_account_url = os.environ.get("FRONTEND_ACTIVATE_ACCOUNT_URL")
+            activation_link = f"{frontend_activate_account_url}?uid={uidb64}&token={token}"
 
-        data = {"account":created_account, "activation_token":token}
+            data = {"account":created_account, "activation_token":token}
 
-        self.enqueue_job(created_account, activation_link)
+            self.enqueue_job(created_account, activation_link)
 
         return data
 
@@ -120,11 +122,11 @@ class RegistrationSerializer(PasswordsMatchingValidateMixin, serializers.ModelSe
 
     def enqueue_job(self, created_account, activation_link):
         """puts a job in the queue for the registration confirmation email"""
-        user_exists = User.objects.filter(id=created_account.id).exists()
-
-        if user_exists:
-            queue = get_queue("default", autocommit=True)
-            queue.enqueue(create_send_email, created_account, activation_link)
+        queue = get_queue("default", autocommit=True)
+        
+        transaction.on_commit(
+            lambda: queue.enqueue(create_send_email, created_account, activation_link)
+        )
 
 
 class ActivateSerializer(IdAndTokenLinkValidate):
