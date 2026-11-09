@@ -29,11 +29,8 @@ services:
       - videoflix_static:/app/static
     ports:
       - "8000:8000"
-      - "7000:7000"
     environment:
       - PYTHONUNBUFFERED=1
-      - DEBUGPY_ENABLED=${DEBUGPY_ENABLED:-0}
-      - WHICH_TEST=${WHICH_TEST:-}
     depends_on:
       - db
       - redis
