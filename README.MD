@@ -26,48 +26,14 @@ All required services, including the backend, PostgreSQL, and Redis, are configu
 git clone https://github.com/LeonardFDev/da-videoflix.git .
 ```
 
-### 2. Create and activate a virtual environment
-
-#### Create:
-
-```bash
-python -m venv env
-```
-
-#### Activate:
-
-Windows CMD:
-
-```bash
-"env/Scripts/activate" 
-```
-
-Windows PowerShell:
-
-```bash
-.\env\Scripts\Activate.ps1
-```
-
-Linux/macOS:
-
-```bash
-source ./env/bin/activate
-```
-
-### 3. Install requirements
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. .env
+### 2. .env
 Creates a '.env' file with the contents of '.env.template'
 
 ```bash
 cp .env.template .env
 ```
 
-### 5. Create and start the project with docker-compose
+### 3. Create and start the project with docker-compose
 Notes: 
 - Docker desktop must be open
 - Please make sure that the file is backend.entrypoint.sh saved with the End of Line Sequence LF.
@@ -127,60 +93,6 @@ Supported operating systems include:
 * Windows
 * Linux
 * macOS
-
----
-
-# FFmpeg
-
-The issue with FFmpeg should already be resolved in the code. However, if you still experience problems with FFmpeg, it can be installed and configured manually.
-
-## Windows
-
-### Option 1: Installation via Download
-
-1. Download a recent FFmpeg build:
-   * [FFmpeg – Download](<https://ffmpeg.org/download.html>)
-   * For Windows, builds from [gyan.dev](<https://www.gyan.dev/ffmpeg/builds/>) or [BtbN](<https://github.com/BtbN/FFmpeg-Builds/releases>) are commonly used.
-2. Extract the ZIP file, for example to:
-
-```Text
-C:\ffmpeg
-```
-
-3. Open the `bin` folder. This folder contains the `ffmpeg.exe` file.
-4. Add the `bin` folder to the Windows environment variables:
-   - Right-click **"This PC"** → **"Properties"**
-   - Open **"Advanced system settings"**
-   - Select **"Environment Variables..."**
-   - Under **"Path"**, add the following entry:
-
-```Text
-C:\ffmpeg\bin
-```
-
-### Option 2: Installation via Terminal
-
-Alternatively, FFmpeg can be installed directly using `winget`:
-
-```powershell
-winget install --id Gyan.FFmpeg -e --source winget
-```
-
-## macOS
-
-On macOS, the easiest way to install FFmpeg is using [Homebrew](<https://brew.sh/>).
-
-If Homebrew is not already installed, run the following command in the Terminal:
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Then install FFmpeg:
-
-```bash
-brew install ffmpeg
-```
 
 ---
 
