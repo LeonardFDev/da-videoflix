@@ -281,55 +281,6 @@ http://127.0.0.1:8000/
 
 ---
 
-# Debugging
-
-The project provides several ways to debug the backend directly inside Docker using Visual Studio Code and to run tests in debug mode.
-
-## Backend Debugging
-
-To start the backend in debug mode, execute the following command:
-
-```bash
-python docker-settings-scripts/start-debug.py
-```
-
-Then, in Visual Studio Code, navigate to **Run and Debug**, select the **Django Docker Debug** configuration, and start it. This allows you to debug the backend directly inside the Docker container using the VS Code debugger.
-
-## Test Debugging
-
-To run tests in debug mode, execute the following command:
-
-```bash
-python docker-settings-scripts/start-tests-debug.py
-```
-
-An input prompt will appear, allowing you to select which tests should be executed:
-
-- **No input**: Runs all available tests.
-- **Enter a filename**: Runs only the tests contained in the specified test file.
-
-**Example:**
-
-```text
-Which test?: auth_app.tests.test_login
-```
-
-In this case, only the tests from test_users.py will be executed.
-Then, in Visual Studio Code, navigate to Run and Debug, select the Debug configuration, and start it.
-The tests can then be debugged directly inside the Docker container using the VS Code debugger.
-
-## Normal Start
-
-To start the project without debug mode, execute the following command:
-
-```bash
-python docker-settings-scripts/start-normal.py
-```
-
-This starts all required services as usual.
-
----
-
 # Authentication
 
 The API uses JWT-based authentication with the Django REST Framework. Access and refresh tokens are used for authentication and are transmitted between the frontend and backend via cookies.
@@ -390,9 +341,6 @@ Videoflix
 ├── README.MD
 ├── README_DE.MD
 |
-├── .vscode
-|    └── launch.json
-|
 ├── services/tasks
 |    ├── convert_video.py
 |    ├── create_confirm_email.py
@@ -406,7 +354,6 @@ Videoflix
 │
 ├── tests
 |    └── helpers.py
-|
 |
 ├── core
 │   ├── settings.py
@@ -430,25 +377,20 @@ Videoflix
 |       ├── urls.py
 |       └── views.py
 │
-├── video_app
-|   ├── models.py
-|   ├── admin.py
-|   ├── migrations/
-|   ├── api
-|   |   ├── serializers.py
-|   |   ├── urls.py
-|   |   └── views.py
-|   |
-|   └── tests
-|       ├── test_video_detail.py
-|       ├── test_video_list.py
-|       └── file_to_test
-|            └── test_video.mp4
-|
-└── docker-settings-scripts
-    ├── start-debug.py
-    ├── start-normal.py
-    └── start-tests-debug.py
+└── video_app
+    ├── models.py
+    ├── admin.py
+    ├── migrations/
+    ├── api
+    |   ├── serializers.py
+    |   ├── urls.py
+    |   └── views.py
+    |
+    └── tests
+        ├── test_video_detail.py
+        ├── test_video_list.py
+        └── file_to_test
+             └── test_video.mp4
 ```
 
 ---

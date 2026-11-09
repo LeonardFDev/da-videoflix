@@ -292,56 +292,6 @@ http://127.0.0.1:8000/
 
 ---
 
-# Debugging
-Das Projekt bietet verschiedene Möglichkeiten, das Backend direkt in Docker über Visual Studio Code zu debuggen und Tests im Debug-Modus auszuführen.
-
-
-## Backend Debugging
-Um das Backend im Debug-Modus zu starten, folgenden Befehl ausführen:
-
-```bash
-python docker-settings-scripts/start-debug.py
-``` 
-
-Anschließend in Visual Studio Code unter **Run and Debug** die Konfiguration **Django Docker Debug** auswählen und starten. Dadurch kann das Backend direkt innerhalb des Docker-Containers mit dem VS-Code-Debugger untersucht werden.
-
-## Test Debugging
-
-Um Tests im Debug-Modus auszuführen, folgenden Befehl starten:
-
-```bash
-python start-tests-debug.py
-```
-
-Anschließend erscheint eine Eingabeaufforderung, über die ausgewählt werden kann, welche Tests ausgeführt werden sollen:
-
-- **Keine Eingabe**: Führt alle verfügbaren Tests aus.
-- **Dateiname eingeben**: Führt nur die Tests der angegebenen Testdatei aus.
-
-**Beispiel:**
-
-```text
-Which test?: auth_app.tests.test_login
-```
-
-In diesem Fall werden nur die Tests aus test_login.py ausgeführt.
-
-Anschließend in Visual Studio Code unter **Run and Debug** die Konfiguration **Django Docker Debug** auswählen und starten.
-
-Die Tests können dadurch direkt innerhalb des Docker-Containers mit dem VS-Code-Debugger untersucht werden.
-
-## Normaler Start
-Um das Projekt ohne Debug-Modus zu starten, folgenden Befehl ausführen:
-
-
-```bash
-python docker-settings-scripts/start-normal.py
-```
-
-Dadurch werden alle benötigten Dienste wie gewohnt gestartet.
-
----
-
 # Authentifizierung
 
 Die API verwendet eine JWT-basierte Authentifizierung über das Django REST Framework. Für die Authentifizierung werden Access- und Refresh-Tokens verwendet, die über Cookies zwischen Frontend und Backend übertragen werden.
@@ -402,9 +352,6 @@ Videoflix
 ├── README.MD
 ├── README_DE.MD
 |
-├── .vscode
-|    └── launch.json
-|
 ├── services/tasks
 |    ├── convert_video.py
 |    ├── create_confirm_email.py
@@ -418,7 +365,6 @@ Videoflix
 │
 ├── tests
 |    └── helpers.py
-|
 |
 ├── core
 │   ├── settings.py
@@ -442,25 +388,20 @@ Videoflix
 |       ├── urls.py
 |       └── views.py
 │
-├── video_app
-|   ├── models.py
-|   ├── admin.py
-|   ├── migrations/
-|   ├── api
-|   |   ├── serializers.py
-|   |   ├── urls.py
-|   |   └── views.py
-|   |
-|   └── tests
-|       ├── test_video_detail.py
-|       ├── test_video_list.py
-|       └── file_to_test
-|            └── test_video.mp4
-|
-└── docker-settings-scripts
-    ├── start-debug.py
-    ├── start-normal.py
-    └── start-tests-debug.py
+└── video_app
+    ├── models.py
+    ├── admin.py
+    ├── migrations/
+    ├── api
+    |   ├── serializers.py
+    |   ├── urls.py
+    |   └── views.py
+    |
+    └── tests
+        ├── test_video_detail.py
+        ├── test_video_list.py
+        └── file_to_test
+             └── test_video.mp4
 ```
 
 ---
