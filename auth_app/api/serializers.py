@@ -16,6 +16,39 @@ from services.tasks.create_password_reset_email import password_reset_send_email
 
 User = get_user_model()
 
+class IdAndTokenLinkValidate(serializers.Serializer):
+    """Global serializer for id and token link validation"""
+
+    uidb64 = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate(self, attrs):
+        """Checks if the id and token are valid"""
+        user = self.return_user_or_invalid_activation_link(attrs)
+        self.invalid_or_expired_token(user, attrs)
+
+        attrs["user"] = user
+        return attrs
+    
+    def return_user_or_invalid_activation_link(self, attrs):
+        """Return the user or raise a validation error of an invalid activation link"""
+        uidb64 = attrs["uidb64"]
+    
+        try:
+            id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=id)
+            return user
+        except Exception:
+            raise serializers.ValidationError({"detail": "Invalid activation link."})
+    
+    def invalid_or_expired_token(self, user, attrs):
+        """If the token is invalid or expired, a validation error is raised"""
+        token = attrs["token"]
+    
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError({"detail": "Invalid or expired token."})
+
+
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializer for the User registration."""
 
@@ -57,8 +90,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         data = {"account":created_account, "activation_token":token}
 
-        queue = get_queue("default", autocommit=True)
-        queue.enqueue(create_send_email, created_account, activation_link)
+        self.enqueue_job(created_account, activation_link)
 
         return data
 
@@ -75,45 +107,30 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         return account
 
+    def enqueue_job(self, created_account, activation_link):
+        """puts a job in the queue for the registration confirmation email"""
+        user_exists = User.objects.filter(id=created_account.id).exists()
 
-class ActivateSerializer(serializers.Serializer):
+        if user_exists:
+            queue = get_queue("default", autocommit=True)
+            queue.enqueue(create_send_email, created_account, activation_link)
+
+
+class ActivateSerializer(IdAndTokenLinkValidate):
     """Serializer for the activate user account."""
-
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
 
     def validate(self, attrs):
         """Checks if the id and token are valid"""
-        uidb64 = attrs["uidb64"]
-        token = attrs["token"]
-
-        user = self.return_user_or_invalid_activation_link(uidb64)
-
+        attrs = super().validate(attrs)
+        user = attrs["user"]
         self.is_already_activated(user)
 
-        self.invalid_or_expired_token(user, token)
-
-        attrs["user"] = user
         return attrs
-
-    def return_user_or_invalid_activation_link(self, uidb64):
-        """Return the user or raise a validation error of an invalid activation link"""
-        try:
-            id = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(id=id)
-            return user
-        except Exception:
-            raise serializers.ValidationError({"detail": "Invalid activation link."})
 
     def is_already_activated(self, user):
         """If the user has already been activated, a validation error is raised"""
         if user.is_active:
             raise serializers.ValidationError({"detail": "The user account is already activated."})
-
-    def invalid_or_expired_token(self, user, token):
-        """If the token is invalid or expired, a validation error is raised"""
-        if not default_token_generator.check_token(user, token):
-            raise serializers.ValidationError({"detail": "Invalid or expired token."})
 
     def save(self, **kwargs):
         """Activates the user and saves it"""
@@ -171,8 +188,8 @@ class PasswordResetSerializer(serializers.Serializer):
         """Create an email to reset the password"""
 
         account = self.return_user_or_email_not_exist_or_not_activated(validated_data)
-        if account == "is_not_exist_or_not_activated":
-            print("is not exist or not activated")
+        if account == None:
+            print("the email is not exist or not activated")
             return True
 
         password_reset_link = self.create_password_reset_link(account)
@@ -190,7 +207,7 @@ class PasswordResetSerializer(serializers.Serializer):
             account = User.objects.get(email=email, is_active=True)
             return account
         except Exception:
-            return "is_not_exist_or_not_activated"
+            return None
 
     def create_password_reset_link(self, account):
         """Creates a password reset link"""
@@ -202,11 +219,9 @@ class PasswordResetSerializer(serializers.Serializer):
         return password_reset_link
 
 
-class PasswordConfirmSerializer(serializers.Serializer):
+class PasswordConfirmSerializer(IdAndTokenLinkValidate):
     """Serializer to confirm the user's new password."""
 
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
@@ -216,31 +231,6 @@ class PasswordConfirmSerializer(serializers.Serializer):
         if new_password and value and new_password != value:
             raise serializers.ValidationError('Passwords do not match')
         return value
-    
-    def validate(self, attrs):
-        """Checks if the id and token are valid"""
-        user = self.return_user_or_invalid_activation_link(attrs)
-        self.invalid_or_expired_token(user, attrs)
-
-        return attrs
-
-    def return_user_or_invalid_activation_link(self, attrs):
-        """Return the user or raise a validation error of an invalid activation link"""
-        uidb64 = attrs["uidb64"]
-
-        try:
-            id = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(id=id)
-            return user
-        except Exception:
-            raise serializers.ValidationError({"detail": "Invalid activation link."})
-
-    def invalid_or_expired_token(self, user, attrs):
-        """If the token is invalid or expired, a validation error is raised"""
-        token = attrs["token"]
-
-        if not default_token_generator.check_token(user, token):
-            raise serializers.ValidationError({"detail": "Invalid or expired token."})
     
     def save(self, **kwargs):
         """Save new password"""
