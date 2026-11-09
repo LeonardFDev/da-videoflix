@@ -72,7 +72,6 @@ docker-compose.override.yml
 # =====================================================
 
 .vscode/*
-!.vscode/launch.json
 
 # =====================================================
 # JetBrains (IntelliJ, WebStorm, PyCharm)
