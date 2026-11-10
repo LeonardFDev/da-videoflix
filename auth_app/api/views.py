@@ -216,7 +216,7 @@ class PasswordConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
-        """Create a new password"""
+        """The default post method is overwritten, a new password is created with the help of a Base64 encoded user ID and an activation token"""
         data = request.data
         data["uidb64"]= uidb64
         data["token"]= token
